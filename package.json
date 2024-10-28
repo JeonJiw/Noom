@@ -1,6 +1,7 @@
 {
   "name": "noom",
   "version": "1.0.0",
+  "type": "module",
   "description": "Zoom Clone using NodeJS, WebRTC and Websockets.",
   "license": "MIT",
   "scripts": {
@@ -15,6 +16,7 @@
   },
   "dependencies": {
     "express": "^4.17.1",
-    "pug": "^3.0.2"
+    "pug": "^3.0.2",
+    "ws": "^8.18.0"
   }
 }
