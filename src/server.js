@@ -34,7 +34,6 @@ function publicRooms() {
       publicRooms.push(key);
     }
   });
-  console.log("Public Rooms:", publicRooms);
   return publicRooms;
 }
 
@@ -45,6 +44,7 @@ function countRoom(roomName) {
 io.on("connection", (socket) => {
   socket["nickname"] = "Anon";
   socket.onAny((event) => {
+    console.log(io.sockets.adapter);
     console.log(`Socket Event: ${event}`);
   });
   socket.on("enter_room", (roomName, done) => {

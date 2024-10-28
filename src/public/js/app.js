@@ -50,7 +50,7 @@ function showRoom(newCount) {
 function handleRoomSubmit(event) {
   event.preventDefault();
   const input = form.querySelector("input");
-  socket.emit("enter_room", roomName, (newCount) => showRoom(newCount));
+  socket.emit("enter_room", input.value, (newCount) => showRoom(newCount));
   roomName = input.value;
   input.value = "";
 }
@@ -71,10 +71,10 @@ socket.on("bye", (left, newCount) => {
 socket.on("new_message", addMessage);
 
 socket.on("room_change", (rooms) => {
-  console.log(`room_change: ${rooms}`);
   const roomList = welcome.querySelector("ul");
   roomList.innerHTML = "";
   if (rooms.length === 0) {
+    roomList.innerHTML = "";
     return;
   }
   rooms.forEach((room) => {
