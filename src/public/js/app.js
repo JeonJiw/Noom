@@ -1,7 +1,7 @@
 const socket = io();
 const welcome = document.getElementById("welcome");
 const room = document.getElementById("room");
-const form = welcome.querySelector("form");
+const form = welcome.querySelector("#roomname");
 const nameForm = welcome.querySelector("#name");
 
 room.hidden = true;
@@ -33,11 +33,15 @@ function handleNicknameSubmit(event) {
   input.value = "";
 }
 
-function showRoom() {
+function updateRoomCount(roomName, newCount) {
+  const h3 = room.querySelector("h3");
+  h3.innerText = `Room ${roomName} (${newCount})`;
+}
+
+function showRoom(newCount) {
   welcome.hidden = true;
   room.hidden = false;
-  const h3 = room.querySelector("h3");
-  h3.innerText = `Room ${roomName}`;
+  updateRoomCount(roomName, newCount);
   const msgForm = room.querySelector("#msg");
 
   msgForm.addEventListener("submit", handleMessageSubmit);
@@ -46,7 +50,7 @@ function showRoom() {
 function handleRoomSubmit(event) {
   event.preventDefault();
   const input = form.querySelector("input");
-  socket.emit("enter_room", input.value, showRoom);
+  socket.emit("enter_room", roomName, (newCount) => showRoom(newCount));
   roomName = input.value;
   input.value = "";
 }
@@ -54,13 +58,28 @@ function handleRoomSubmit(event) {
 form.addEventListener("submit", handleRoomSubmit);
 nameForm.addEventListener("submit", handleNicknameSubmit);
 
-//socket.on("welcome", addMessage("someone joined!")); // Calls addMessage immediately and passes the result (likely undefined) to socket.on()
-socket.on("welcome", () => {
-  addMessage("someone joined!");
+socket.on("welcome", (user, newCount) => {
+  updateRoomCount(roomName, newCount);
+  addMessage(`${user} arrived!`);
 });
 
-socket.on("bye", () => {
-  addMessage("someone left!");
+socket.on("bye", (left, newCount) => {
+  updateRoomCount(roomName, newCount);
+  addMessage(`${left} leftㅠㅠ`);
 });
 
 socket.on("new_message", addMessage);
+
+socket.on("room_change", (rooms) => {
+  console.log(`room_change: ${rooms}`);
+  const roomList = welcome.querySelector("ul");
+  roomList.innerHTML = "";
+  if (rooms.length === 0) {
+    return;
+  }
+  rooms.forEach((room) => {
+    const li = document.createElement("li");
+    li.innerText = room;
+    roomList.append(li);
+  });
+});
