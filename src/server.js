@@ -3,6 +3,7 @@ import { Server } from "socket.io";
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
+import { instrument } from "@socket.io/admin-ui";
 
 const app = express();
 const port = 3002;
@@ -19,7 +20,15 @@ app.get("/*", (req, res) => res.redirect("/"));
 const handleListen = () => console.log(`Listening on http://localhost:${port}`);
 
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: ["https://admin.socket.io"],
+    credentials: true,
+  },
+});
+instrument(io, {
+  auth: false,
+});
 
 function publicRooms() {
   const {
